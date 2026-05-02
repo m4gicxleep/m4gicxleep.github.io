@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MachineName · m4gicxleep</title>
+  <meta name="description" content="HTB / CTF writeup for MachineName." />
+  <link rel="stylesheet" href="../../style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="nav-logo">m4gicxleep<span>_</span></a>
+        <ul class="nav-links">
+          <li><a href="/about/">about</a></li>
+          <li><a href="/categories/">categories</a></li>
+          <li><a href="/articles/">articles</a></li>
+          <li><a href="/ctfs/">ctfs</a></li>
+          <li><a href="/hack-the-box/">htb</a></li>
+          <li><a href="/malware-notes/">malware</a></li>
+          <li><a href="/misc/">misc</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- ── Post header ── -->
+      <div class="post-header">
+
+        <div class="post-meta">
+          <!-- Change href and label to match section: /hack-the-box/ /ctfs/ /malware-notes/ -->
+          <a href="/hack-the-box/" class="post-category">hack the box</a>
+          <span class="post-meta-sep">/</span>
+          <span class="post-meta-date">2025-01-01</span>
+        </div>
+
+        <h1>MachineName</h1>
+
+        <p class="post-summary">
+          Short description of what this machine/challenge is about
+          and the main technique or vulnerability exploited.
+        </p>
+
+        <div class="post-tags">
+          <span class="post-tag">linux</span>
+          <span class="post-tag">web</span>
+          <span class="post-tag">privesc</span>
+        </div>
+
+      </div>
+
+      <!-- ── Writeup info table ── -->
+      <!--
+        For HTB machines. Remove this block for CTF or malware-notes.
+        Difficulty classes: easy · medium · hard · insane
+      -->
+      <dl class="writeup-info">
+        <dt>Name</dt>       <dd>MachineName</dd>
+        <dt>OS</dt>         <dd>Linux</dd>
+        <dt>Difficulty</dt> <dd class="medium">Medium</dd>
+        <dt>IP</dt>         <dd>10.10.10.x</dd>
+        <dt>Retired</dt>    <dd>Yes</dd>
+      </dl>
+
+      <!-- ── Writeup body ── -->
+      <article class="post-body">
+
+        <h2>// Summary</h2>
+
+        <p>
+          One paragraph overview of the whole path: initial foothold, lateral movement
+          (if any), and privilege escalation. Spoiler-level, no detail yet.
+        </p>
+
+        <!-- ════════════════════════════════════════ -->
+
+        <h2>// Recon</h2>
+
+        <h3>Nmap</h3>
+
+        <span class="code-label">bash</span>
+        <pre><code>nmap -sV -sC -oN nmap/initial 10.10.10.x</code></pre>
+
+        <span class="code-label">output</span>
+        <pre><code>PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp open  http    Apache httpd 2.4.52</code></pre>
+
+        <p>
+          Two open ports. SSH and a web server. Start with HTTP.
+        </p>
+
+        <h3>Web enumeration</h3>
+
+        <p>
+          Describe what you found on the web server. Screenshot or directory listing goes here.
+        </p>
+
+        <div class="callout info">
+          <strong>note</strong>
+          Add context or interesting observations that aren't part of the main path
+          but worth noting.
+        </div>
+
+        <!-- ════════════════════════════════════════ -->
+
+        <h2>// Foothold</h2>
+
+        <p>
+          Explain how you got initial access. What vulnerability? What tool? What payload?
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code># Example command
+python3 exploit.py --target 10.10.10.x --lhost 10.10.14.x --lport 4444</code></pre>
+
+        <div class="callout tip">
+          <strong>tip</strong>
+          Something worth remembering about this technique.
+        </div>
+
+        <!-- ════════════════════════════════════════ -->
+
+        <h2>// Privilege Escalation</h2>
+
+        <p>
+          What did you run for enumeration? What did you find?
+          What was the privesc vector?
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>sudo -l
+
+# Output:
+# User www-data may run the following commands:
+# (root) NOPASSWD: /usr/bin/vim</code></pre>
+
+        <p>
+          Explain the path to root here. Keep it clear and step by step.
+        </p>
+
+        <!-- ════════════════════════════════════════ -->
+
+        <h2>// Root</h2>
+
+        <div class="callout flag">
+          <strong>flag</strong>
+          root.txt → <code>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</code>
+        </div>
+
+        <!-- ════════════════════════════════════════ -->
+
+        <h2>// Takeaways</h2>
+
+        <p>
+          What's the one thing to remember from this machine?
+          Any technique you want to look into further?
+        </p>
+
+        <ul>
+          <li>Key takeaway one</li>
+          <li>Key takeaway two</li>
+        </ul>
+
+      </article>
+
+      <!-- ── Post nav ── -->
+      <nav class="post-nav">
+        <a href="/hack-the-box/" class="prev">Back to HTB</a>
+        <!-- <a href="/hack-the-box/next-machine/" class="next">NextMachine</a> -->
+      </nav>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        <a href="https://github.com/m4gicxleep" target="_blank" rel="noopener">github</a>
+        &nbsp;·&nbsp; m4gicxleep &copy; 2025
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

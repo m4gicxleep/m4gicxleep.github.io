@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post Title · m4gicxleep</title>
+  <meta name="description" content="Short description of this post for SEO/sharing." />
+  <!--
+    Adjust the path to style.css depending on nesting depth:
+    - articles/post-name/index.html  → ../../style.css
+    - ctfs/challenge/index.html      → ../../style.css
+    - hack-the-box/box/index.html    → ../../style.css
+    - malware-notes/name/index.html  → ../../style.css
+    - misc/note/index.html           → ../../style.css
+  -->
+  <link rel="stylesheet" href="../../style.css" />
+</head>
+<body>
+
+  <!-- ── Nav ── -->
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="nav-logo">m4gicxleep<span>_</span></a>
+        <ul class="nav-links">
+          <li><a href="/about/">about</a></li>
+          <li><a href="/categories/">categories</a></li>
+          <li><a href="/articles/">articles</a></li>
+          <li><a href="/ctfs/">ctfs</a></li>
+          <li><a href="/hack-the-box/">htb</a></li>
+          <li><a href="/malware-notes/">malware</a></li>
+          <li><a href="/misc/">misc</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- ── Post header ── -->
+      <div class="post-header">
+
+        <!-- Breadcrumb meta: change category link/label to match section -->
+        <div class="post-meta">
+          <a href="/articles/" class="post-category">articles</a>
+          <span class="post-meta-sep">/</span>
+          <span class="post-meta-date">2025-01-01</span>
+          <span class="post-meta-sep">·</span>
+          <span class="post-meta-read">5 min read</span>
+        </div>
+
+        <h1>Post Title Goes Here</h1>
+
+        <p class="post-summary">
+          A short one or two sentence summary of what this post covers.
+          Keep it factual and direct.
+        </p>
+
+        <!-- Tags: add/remove as needed -->
+        <div class="post-tags">
+          <span class="post-tag">tag-one</span>
+          <span class="post-tag">tag-two</span>
+          <span class="post-tag">tag-three</span>
+        </div>
+
+      </div>
+
+      <!-- ── Post body ── -->
+      <article class="post-body">
+
+        <!-- ════════════════════════════════════════
+             WRITE YOUR CONTENT BELOW THIS LINE
+             ════════════════════════════════════════
+
+          ELEMENTS AVAILABLE:
+
+          Headings:
+            <h2>Section title</h2>
+            <h3>Subsection</h3>
+            <h4>Sub-subsection</h4>
+
+          Paragraph:
+            <p>Text here.</p>
+
+          Inline code:
+            <code>command --flag</code>
+
+          Code block (without label):
+            <pre><code>your
+multiline
+code here</code></pre>
+
+          Code block (with language label):
+            <span class="code-label">bash</span>
+            <pre><code>command here</code></pre>
+
+          Callout boxes:
+            <div class="callout info"><strong>note</strong> Text here.</div>
+            <div class="callout warn"><strong>warning</strong> Text here.</div>
+            <div class="callout tip"><strong>tip</strong> Text here.</div>
+
+          Image with caption:
+            <figure>
+              <img src="../../images/filename.png" alt="description" />
+              <figcaption>Caption text here.</figcaption>
+            </figure>
+
+          Horizontal rule:
+            <hr />
+
+          List:
+            <ul>
+              <li>Item one</li>
+              <li>Item two</li>
+            </ul>
+        ════════════════════════════════════════ -->
+
+        <h2>// Introduction</h2>
+
+        <p>
+          Write your introduction paragraph here. Explain the context,
+          why this matters, or what you observed.
+        </p>
+
+        <div class="callout info">
+          <strong>note</strong>
+          This is a note callout. Use it for additional context,
+          clarifications, or references.
+        </div>
+
+        <h2>// Section Two</h2>
+
+        <p>
+          Continue here. You can use <code>inline code</code> anywhere in a paragraph.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>$ nmap -sV -sC -oN nmap/initial 10.10.10.x
+Starting Nmap 7.94 ...
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1
+80/tcp open  http    Apache httpd 2.4.52</code></pre>
+
+        <h3>Subsection example</h3>
+
+        <p>
+          Use <code>h3</code> for deeper sections. Keep heading levels logical
+          and don't skip from h2 to h4.
+        </p>
+
+        <h2>// Conclusion</h2>
+
+        <p>
+          Wrap up your thoughts here. What did you learn? What's worth remembering?
+        </p>
+
+      </article>
+
+      <!-- ── Post navigation ── -->
+      <!--
+        Fill in prev/next as you add more posts.
+        Remove the links you don't need.
+      -->
+      <nav class="post-nav">
+        <a href="/articles/" class="prev">Back to articles</a>
+        <!-- <a href="/articles/next-post/" class="next">Next Post Title</a> -->
+      </nav>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        <a href="https://github.com/m4gicxleep" target="_blank" rel="noopener">github</a>
+        &nbsp;·&nbsp; m4gicxleep &copy; 2025
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
