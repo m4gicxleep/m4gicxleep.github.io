@@ -3,7 +3,22 @@
    style.css
 ───────────────────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500&display=swap');
+/* ── Local fonts (no Google tracking) ── */
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter.woff2') format('woff2');
+  font-weight: 300 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('fonts/jetbrains-mono.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ── Variables ── */
 :root {
