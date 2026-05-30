@@ -6,16 +6,18 @@
   <title>Post Title · m4gicxleep</title>
   <meta name="description" content="Short description of this post for SEO/sharing." />
   <!--
-    Adjust the path to style.css depending on nesting depth:
-    - articles/post-name/index.html  → ../../style.css
-    - ctfs/challenge/index.html      → ../../style.css
-    - hack-the-box/box/index.html    → ../../style.css
-    - malware-notes/name/index.html  → ../../style.css
-    - misc/note/index.html           → ../../style.css
+    Adjust path to style.css and bg.js based on nesting depth:
+    - articles/post-name/index.html  → ../../style.css  /  ../../bg.js
+    - ctfs/challenge/index.html      → ../../style.css  /  ../../bg.js
+    - hack-the-box/box/index.html    → ../../style.css  /  ../../bg.js
+    - malware-notes/name/index.html  → ../../style.css  /  ../../bg.js
+    - misc/note/index.html           → ../../style.css  /  ../../bg.js
   -->
   <link rel="stylesheet" href="../../style.css" />
 </head>
 <body>
+
+  <canvas id="bg"></canvas>
 
   <!-- ── Nav ── -->
   <header>
@@ -174,10 +176,11 @@ PORT   STATE SERVICE VERSION
     <div class="container">
       <p>
         <a href="https://github.com/m4gicxleep" target="_blank" rel="noopener">github</a>
-        &nbsp;·&nbsp; m4gicxleep &copy; 2025
+        &nbsp;·&nbsp; m4gicxleep &copy; 2026
       </p>
     </div>
   </footer>
 
+  <script src="../../bg.js"></script>
 </body>
 </html>
