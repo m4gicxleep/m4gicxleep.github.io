@@ -432,8 +432,14 @@ nav {
   padding: .9rem 0;
 }
 
-.post-item--cover a:has(.post-cover) {
+.post-cover-link {
   flex-shrink: 0;
+  width: 90px;
+  height: 60px;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
 }
 
 .post-item--cover .post-cover {
