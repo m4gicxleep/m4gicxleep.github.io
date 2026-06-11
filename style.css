@@ -426,18 +426,19 @@ nav {
 
 /* ── Post card with cover image ── */
 .post-item--cover {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: .75rem;
-  padding: 0 0 1.5rem;
-  border-bottom: 1px solid var(--border);
-  transition: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: .9rem 0;
 }
-.post-item--cover:hover { padding-left: 0; }
+
+.post-item--cover a:has(.post-cover) {
+  flex-shrink: 0;
+}
 
 .post-item--cover .post-cover {
-  width: 100%;
-  height: 120px;
+  width: 90px;
+  height: 60px;
   object-fit: cover;
   object-position: center;
   border-radius: var(--radius);
@@ -447,7 +448,7 @@ nav {
 }
 .post-item--cover:hover .post-cover {
   opacity: .85;
-  box-shadow: 0 0 20px rgba(255,85,0,0.2);
+  box-shadow: 0 0 14px rgba(255,85,0,0.25);
 }
 
 .post-item--cover .post-item-row {
