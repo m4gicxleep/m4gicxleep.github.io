@@ -5,15 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Post Title · m4gicxleep</title>
   <meta name="description" content="Short description of this post for SEO/sharing." />
-  <!--
-    Adjust path to style.css and bg.js based on nesting depth:
-    - articles/post-name/index.html  → ../../style.css  /  ../../bg.js
-    - ctfs/challenge/index.html      → ../../style.css  /  ../../bg.js
-    - hack-the-box/box/index.html    → ../../style.css  /  ../../bg.js
-    - malware-notes/name/index.html  → ../../style.css  /  ../../bg.js
-    - misc/note/index.html           → ../../style.css  /  ../../bg.js
-  -->
-  <link rel="stylesheet" href="../../style.css" />
+  <!-- Root-relative asset paths work from every section. -->
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
@@ -26,12 +19,11 @@
         <a href="/" class="nav-logo">m4gicxleep<span>_</span></a>
         <ul class="nav-links">
           <li><a href="/about/">about</a></li>
-          <li><a href="/categories/">categories</a></li>
-          <li><a href="/articles/">articles</a></li>
-          <li><a href="/ctfs/">ctfs</a></li>
-          <li><a href="/hack-the-box/">htb</a></li>
+          <li><a href="/pentest-red-team/">pentest &amp; red team</a></li>
           <li><a href="/malware-notes/">malware</a></li>
-          <li><a href="/misc/">misc</a></li>
+          <li><a href="/embedded-security/">embedded security</a></li>
+          <li><a href="/hardware-hacking/">hardware hacking</a></li>
+          <li><a href="/ctfs/">ctfs</a></li>
         </ul>
       </nav>
     </div>
@@ -43,9 +35,9 @@
       <!-- ── Post header ── -->
       <div class="post-header">
 
-        <!-- Breadcrumb meta: change category link/label to match section -->
+        <!-- Breadcrumb meta: change the category link/label to match the section -->
         <div class="post-meta">
-          <a href="/articles/" class="post-category">articles</a>
+          <a href="/pentest-red-team/" class="post-category">pentest &amp; red team</a>
           <span class="post-meta-sep">/</span>
           <span class="post-meta-date">2025-01-01</span>
           <span class="post-meta-sep">·</span>
@@ -165,8 +157,8 @@ PORT   STATE SERVICE VERSION
         Remove the links you don't need.
       -->
       <nav class="post-nav">
-        <a href="/articles/" class="prev">Back to articles</a>
-        <!-- <a href="/articles/next-post/" class="next">Next Post Title</a> -->
+        <a href="/pentest-red-team/" class="prev">Back to Pentest &amp; Red Team</a>
+        <!-- <a href="/pentest-red-team/next-post/" class="next">Next Post Title</a> -->
       </nav>
 
     </div>
@@ -181,6 +173,6 @@ PORT   STATE SERVICE VERSION
     </div>
   </footer>
 
-  <script src="../../bg.js"></script>
+  <script src="/bg.js"></script>
 </body>
 </html>
