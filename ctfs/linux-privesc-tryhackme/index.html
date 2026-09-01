@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TryHackMe — Linux PrivEsc · m4gicxleep</title>
+  <meta name="description" content="Notes from the Linux PrivEsc room on TryHackMe, covering common Linux privilege escalation paths in an intentionally vulnerable Debian VM." />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <canvas id="bg"></canvas>
+
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="nav-logo">m4gicxleep<span>_</span></a>
+        <ul class="nav-links">
+          <li><a href="/about/">about</a></li>
+          <li><a href="/pentest-red-team/">pentest &amp; red team</a></li>
+          <li><a href="/embedded-security/">embedded security</a></li>
+          <li><a href="/hardware-hacking/">hardware hacking</a></li>
+          <li><a href="/reverse-engineering/">reverse engineering</a></li>
+          <li><a href="/ctfs/">ctfs</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <div class="post-header">
+        <div class="post-meta">
+          <a href="/ctfs/" class="post-category">ctfs</a>
+          <span class="post-meta-sep">/</span>
+          <span class="post-meta-read">TryHackMe</span>
+        </div>
+
+        <h1>Linux PrivEsc</h1>
+
+        <p class="post-summary">
+          Notes from Tib3rius's Linux privilege escalation room: service abuse,
+          weak permissions, sudo, cron, SUID/SGID, credentials, NFS, and kernel exploits.
+        </p>
+
+        <div class="post-tags">
+          <span class="post-tag">linux</span>
+          <span class="post-tag">privesc</span>
+          <span class="post-tag">tryhackme</span>
+        </div>
+      </div>
+
+      <dl class="writeup-info">
+        <dt>Room</dt>     <dd>Linux PrivEsc</dd>
+        <dt>Platform</dt> <dd>TryHackMe</dd>
+        <dt>Target</dt>   <dd>Intentionally vulnerable Debian VM</dd>
+        <dt>Focus</dt>    <dd>Local privilege escalation</dd>
+      </dl>
+
+      <article class="post-body">
+
+        <h2>// Context</h2>
+
+        <p>
+          I completed the Linux PrivEsc room on TryHackMe. The VM originated in
+          Sagi Shahar's local privilege escalation workshop and was updated by
+          Tib3rius for this room. It is built to expose several independent paths
+          from the low-privileged <code>user</code> account to root.
+        </p>
+
+        <p>
+          I did not save my terminal output while working through it, so this is a
+          reconstruction of the techniques I practiced rather than a transcript.
+          I am also leaving out question answers, hashes, passwords, and flags.
+        </p>
+
+        <figure>
+          <img src="completion.png" alt="Completed tasks in the TryHackMe Linux PrivEsc room" loading="lazy" style="max-width:447px;margin:0 auto;" />
+          <figcaption>All 21 tasks completed in the Linux PrivEsc room.</figcaption>
+        </figure>
+
+        <div class="callout warn">
+          <strong>lab only</strong>
+          These techniques were practiced against the intentionally vulnerable machine
+          provided by TryHackMe. Use them only where you have explicit authorization.
+        </div>
+
+        <h2>// Starting point</h2>
+
+        <p>
+          The room starts with SSH access to a Debian VM as an unprivileged user.
+          The first check establishes the current security context before testing
+          each escalation path separately.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>ssh user@MACHINE_IP
+id</code></pre>
+
+        <p>
+          Each exercise ends with a root shell. I exited that shell before moving
+          on so the next technique still began from the original user context.
+        </p>
+
+        <h2>// Service exploit: MySQL UDF</h2>
+
+        <p>
+          The MySQL service runs as root and accepts the database root account without
+          a password. The path is to compile the supplied UDF, load it as a MySQL plugin,
+          and use the new function to execute an operating-system command as root.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>cd /home/user/tools/mysql-udf
+gcc -g -c raptor_udf2.c -fPIC
+gcc -g -shared -Wl,-soname,raptor_udf2.so \
+  -o raptor_udf2.so raptor_udf2.o -lc
+mysql -u root</code></pre>
+
+        <p>
+          Inside MySQL, the shared object is written to the plugin directory and
+          registered as <code>do_system</code>. Calling it can create an SUID copy of
+          Bash; running that copy with <code>-p</code> preserves the effective UID.
+        </p>
+
+        <div class="callout tip">
+          <strong>lesson</strong>
+          A service running as root turns a service-level weakness into local root
+          command execution. The daemon's operating-system context matters as much
+          as the database permissions.
+        </div>
+
+        <h2>// Weak file permissions</h2>
+
+        <h3>Readable /etc/shadow</h3>
+
+        <p>
+          A world-readable shadow file exposes password hashes. The root hash can be
+          copied to the attacker machine and tested offline with a wordlist.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>ls -l /etc/shadow
+cat /etc/shadow
+john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt</code></pre>
+
+        <h3>Writable /etc/shadow and /etc/passwd</h3>
+
+        <p>
+          Write access is even more direct. A replacement password hash can be generated
+          for the root entry in <code>/etc/shadow</code>. If <code>/etc/passwd</code> is
+          writable, a hash can be placed in a UID 0 account entry instead.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>mkpasswd -m sha-512 NEW_PASSWORD
+openssl passwd NEW_PASSWORD</code></pre>
+
+        <p>
+          The important check is not simply whether these files exist, but whether their
+          ownership and mode match the trust placed in them by the authentication stack.
+        </p>
+
+        <h2>// Sudo abuse</h2>
+
+        <p>
+          <code>sudo -l</code> is the starting point. Allowed binaries may expose shell
+          escapes or file operations that become dangerous when executed as root. GTFOBins
+          is useful for mapping a permitted binary to those behaviors.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>sudo -l</code></pre>
+
+        <h3>Inherited environment variables</h3>
+
+        <p>
+          The lab also preserves <code>LD_PRELOAD</code> and <code>LD_LIBRARY_PATH</code>
+          through sudo. The first can inject a shared object before normal libraries are
+          loaded; the second can make a privileged process search an attacker-controlled
+          directory first.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>gcc -fPIC -shared -nostartfiles \
+  -o /tmp/preload.so /home/user/tools/sudo/preload.c
+
+sudo LD_PRELOAD=/tmp/preload.so PROGRAM
+
+ldd /usr/sbin/apache2
+gcc -o /tmp/libcrypt.so.1 -shared -fPIC \
+  /home/user/tools/sudo/library_path.c
+sudo LD_LIBRARY_PATH=/tmp apache2</code></pre>
+
+        <h2>// Cron jobs</h2>
+
+        <p>
+          The room demonstrates three different trust failures in scheduled jobs:
+          a root-owned job executing a writable script, an unsafe <code>PATH</code>,
+          and wildcard expansion interpreted as command-line options by <code>tar</code>.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>cat /etc/crontab
+locate overwrite.sh
+ls -l /usr/local/bin/overwrite.sh
+cat /usr/local/bin/compress.sh</code></pre>
+
+        <p>
+          For the PATH case, the system crontab searches <code>/home/user</code> before
+          trusted system directories. A user-controlled executable with the expected name
+          is therefore selected by the root cron job. For the wildcard case, filenames such
+          as <code>--checkpoint=1</code> become options when the shell expands <code>*</code>.
+        </p>
+
+        <div class="callout tip">
+          <strong>lesson</strong>
+          Scheduled commands should use absolute paths, trusted working directories,
+          fixed arguments, and scripts that unprivileged users cannot modify.
+        </div>
+
+        <h2>// SUID and SGID executables</h2>
+
+        <p>
+          The first step is to inventory files that execute with an effective user or group
+          ID different from the caller. The room then explores four distinct problems:
+          a known Exim exploit, shared-object injection, PATH hijacking, and Bash behavior
+          inherited by an SUID program.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>find / -type f -a \( -perm -u+s -o -perm -g+s \) \
+  -exec ls -l {} \; 2&gt;/dev/null
+
+strace /usr/local/bin/suid-so 2&gt;&amp;1 \
+  | grep -iE "open|access|no such file"
+
+strings /usr/local/bin/suid-env
+strings /usr/local/bin/suid-env2</code></pre>
+
+        <p>
+          The shared-object exercise finds a missing library below the user's home directory.
+          Compiling the supplied <code>libcalc.c</code> at that exact path causes the SUID
+          executable to load attacker-controlled code. The environment-variable exercise
+          finds a call to <code>service</code> without an absolute path, making PATH order the
+          escalation vector.
+        </p>
+
+        <p>
+          Two later tasks abuse version-specific Bash features through the second SUID
+          executable. These are good reminders to record interpreter versions: a technique
+          that works on the old lab image may not apply to a modern system.
+        </p>
+
+        <h2>// Passwords and SSH keys</h2>
+
+        <p>
+          Credentials do not need a software exploit. The lab places sensitive material in
+          shell history, a configuration referenced by an OpenVPN file, and a readable backup
+          of root's private SSH key.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>cat ~/.*history | less
+ls /home/user
+cat /home/user/myvpn.ovpn
+ls -la /
+ls -l /.ssh</code></pre>
+
+        <p>
+          A copied private key must have restrictive local permissions before OpenSSH will use
+          it. The old target also requires explicitly enabling its legacy SSH key algorithms.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>chmod 600 root_key
+ssh -i root_key \
+  -oPubkeyAcceptedKeyTypes=+ssh-rsa \
+  -oHostKeyAlgorithms=+ssh-rsa root@MACHINE_IP</code></pre>
+
+        <h2>// NFS</h2>
+
+        <p>
+          The exported <code>/tmp</code> share disables root squashing. A file created on the
+          mounted share by root on the attacker machine keeps UID 0 ownership on the target,
+          allowing an SUID executable placed there to run with root privileges.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>cat /etc/exports
+
+# attacker machine
+sudo mkdir /tmp/nfs
+sudo mount -o rw,vers=3 MACHINE_IP:/tmp /tmp/nfs</code></pre>
+
+        <h2>// Kernel exploits and enumeration scripts</h2>
+
+        <p>
+          Linux Exploit Suggester 2 identifies Dirty COW as a possible match for the old
+          kernel. The room deliberately puts this near the end: kernel exploits can destabilize
+          a host and should be treated as a last resort after configuration-based paths have
+          been exhausted.
+        </p>
+
+        <span class="code-label">bash</span>
+        <pre><code>perl /home/user/tools/kernel-exploits/linux-exploit-suggester-2/\
+linux-exploit-suggester-2.pl
+
+ls -la /home/user/tools/privesc-scripts</code></pre>
+
+        <p>
+          The final task compares three automated privilege-escalation scripts against the
+          manual findings. Automation is useful for breadth, but it is much easier to judge
+          a finding after understanding the permission, execution, or trust boundary it violates.
+        </p>
+
+        <h2>// Takeaways</h2>
+
+        <ul>
+          <li>Start with identity, sudo permissions, scheduled jobs, and SUID/SGID inventory.</li>
+          <li>Follow execution context: which user runs the service, script, or binary?</li>
+          <li>Check every trusted file and search path for unprivileged write access.</li>
+          <li>Look for credentials in history, configuration files, backups, and private keys.</li>
+          <li>Prefer repeatable misconfigurations over risky kernel exploitation.</li>
+          <li>Use enumeration scripts to support manual analysis, not replace it.</li>
+        </ul>
+
+        <h2>// References</h2>
+
+        <ul>
+          <li><a href="https://tryhackme.com/room/linuxprivesc" target="_blank" rel="noopener">TryHackMe — Linux PrivEsc</a></li>
+          <li><a href="https://github.com/sagishahar/lpeworkshop" target="_blank" rel="noopener">Sagi Shahar — Local Privilege Escalation Workshop</a></li>
+          <li><a href="https://gtfobins.org/" target="_blank" rel="noopener">GTFOBins</a></li>
+        </ul>
+
+      </article>
+
+      <nav class="post-nav">
+        <a href="/ctfs/" class="prev">Back to CTFs</a>
+      </nav>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        <a href="https://github.com/m4gicxleep" target="_blank" rel="noopener">github</a>
+        &nbsp;·&nbsp; m4gicxleep &copy; 2026
+      </p>
+    </div>
+  </footer>
+
+  <script src="/bg.js"></script>
+</body>
+</html>
